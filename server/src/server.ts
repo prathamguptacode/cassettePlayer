@@ -1,40 +1,26 @@
 import "dotenv/config"
+import env from "./config/env"
 import express, { Request, Response } from "express"
-import fs from "fs"
-const app = express()
+import mongoose from "mongoose"
+import upload from "./routes/upload"
+import stream from "./routes/music"
+import errHandler from "./middleware/errormiddleware"
 
+mongoose.connect(env.DB_URL).then(() => console.log("connected to DB")).catch(() => {
+  console.log("DB Connection error")
+  process.exit(1)
+})
+
+const app = express()
 
 app.get("/", (_req: Request, res: Response) => {
   res.json({ message: "hello world! music loverr" })
 })
 
-app.get("/music/:musicid", (req: Request, res: Response) => {
-  // const musicId = req.params.musicid
-  // if (typeof musicId != "string") {
-  //   return res.status(400).json({ message: "Something went wrong" })
-  // }
-  const range = req.headers.range
-  if (typeof range != "string") {
-    return res.status(400).json({ message: "Range not found" })
-  }
-  const musicPath = "sources/music2.mp3"
-  const musicSize = fs.statSync(musicPath).size
-  const start = Number(range.replace(/\D/g, ''));
-  const chunk = 10 ** 6;
-  const end = Math.min(start + chunk, musicSize - 1)
-  const contentLength = end - start + 1;
-  const headers = {
-    'Content-Range': `bytes ${start}-${end}/${musicSize}`,
-    'Accept-Ranges': 'bytes',
-    'Content-Length': contentLength,
-    'Content-Type': 'audio/mpeg',
-  };
-  res.writeHead(206, headers)
-  const musicStream = fs.createReadStream(musicPath, { start, end })
-  return musicStream.pipe(res)
-})
+app.use("/upload", upload)
+app.use("/stream", stream)
 
+app.use(errHandler)
 
-
-const PORT = process.env.PORT || 8000
+const PORT = env.PORT
 app.listen(PORT, () => console.log("server on", PORT))
