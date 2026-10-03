@@ -10,7 +10,16 @@
     "backgroundColor": "#27282E",
     "ios": {
       "icon": "./assets/logo.png",
-      "bundleIdentifier": "com.prathamguptacode.client"
+      "bundleIdentifier": "com.prathamguptacode.client",
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSExceptionDomains": {
+            "starind.ddns.net": {
+              "NSExceptionAllowsInsecureHTTPLoads": true
+            }
+          }
+        }
+      }
     },
     "android": {
       "adaptiveIcon": {

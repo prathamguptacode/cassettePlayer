@@ -16,7 +16,7 @@ router.get("/maincover/:id", async (req: Request, res: Response) => {
   const pathDb = dbMusic.mainCover
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
-  res.sendFile(pathDb, { root: path.join(__dirname, "../../") })
+  res.sendFile(pathDb, { root: path.join(__dirname, "../../dist/") })
 })
 
 router.get("/sidecover/:id", async (req: Request, res: Response) => {
@@ -28,7 +28,7 @@ router.get("/sidecover/:id", async (req: Request, res: Response) => {
   const pathDb = dbMusic.sideCover
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
-  res.sendFile(pathDb, { root: path.join(__dirname, "../../") })
+  res.sendFile(pathDb, { root: path.join(__dirname, "../../dist/") })
 })
 //
 // router.get("/music/:musicid", async (req: Request, res: Response) => {
