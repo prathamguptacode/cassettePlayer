@@ -7,7 +7,7 @@ import MusicContext from "./context/musicContext";
 
 SplashScreen.preventAutoHideAsync()
 
-export const apiUrl = "http://localhost:8000"
+export const apiUrl = " http://starind.ddns.net:8080/napster"
 export type musicList = {
   list: { _id: string, title: string, singers: string[] }[]
 }
