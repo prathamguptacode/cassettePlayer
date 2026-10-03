@@ -3,30 +3,46 @@ import { Image } from 'expo-image';
 import { useState } from "react";
 import colors from "../styles/colors";
 import { useRouter } from "expo-router";
+import { useAudioPlayer } from 'expo-audio';
+import { apiUrl } from "../_layout";
 
-export default function SideCassette() {
+
+const insertSound = require("../../../assets/insert.mp3")
+
+export default function SideCassette({ _id, title, singers }: { _id: string, title: string, singers: string[] }) {
 
   const [dis, setDis] = useState(false)
   const router = useRouter()
 
+  const player = useAudioPlayer(insertSound);
+
+  async function playButtonSound() {
+    await player.seekTo(0);
+    player.play();
+  }
+
+
+
   return (
-    <TouchableOpacity onPress={() => setDis(prev => !prev)} onLongPress={() => router.navigate('/cassette')} >
+    <TouchableOpacity onPress={() => setDis(prev => !prev)} onLongPress={() => { playButtonSound(); router.navigate(`/${_id}?title=${title}&singers=${singers}`) }} >
       <View style={[dis ? styles.pressContainer : styles.container]}>
         <View style={styles.leftHolder} />
         {
           dis ? <View style={styles.titleBox}>
-            <Text style={styles.title}>Song Name</Text>
-            <Text style={styles.singer}>singers</Text>
+            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.singer}>{
+              singers.map(e => e + ", ")
+            }</Text>
           </View> : null
         }
         <Image
           style={[styles.image, dis ? styles.pressImage : null]}
-          source={require("../../../assets/images/cassette.png")}
+          source={apiUrl + "/stream/sidecover/" + _id}
           contentFit="cover"
         />
         <View style={styles.rightHolder} />
       </View>
-    </TouchableOpacity>
+    </TouchableOpacity >
 
   );
 }
@@ -100,6 +116,5 @@ const styles = StyleSheet.create({
   singer: {
     color: colors.fontColor,
     fontSize: 16
-  }
-
+  },
 });

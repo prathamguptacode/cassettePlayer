@@ -42,7 +42,13 @@
           "disableLibdav1d": true
         }
       ],
-      "react-native-audio-api"
+      [
+        "react-native-audio-api",
+        {
+          "iosBackgroundMode": true
+        }
+      ],
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true,

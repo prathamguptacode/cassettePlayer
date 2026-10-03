@@ -1,10 +1,21 @@
-import { Text, View, StyleSheet, DimensionValue, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, DimensionValue, TouchableOpacity, } from "react-native";
 import colors from "./styles/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
-import { StepBack, StepForward } from "lucide-react-native"
+import { Pause, Play, SquareCode, StepBack, StepForward, StopCircle } from "lucide-react-native"
+import { Audio, AudioTagHandle, } from 'react-native-audio-api';
+import { RefObject, useRef } from "react";
+import { useAudioPlayer } from "expo-audio";
+import { useLocalSearchParams } from "expo-router";
+import { apiUrl } from "./_layout";
+
+const btnSound = require("../../assets/button.mp3")
 
 export default function Cassette() {
+
+  const ref = useRef<AudioTagHandle>(null);
+  const { cassette, title, singers } = useLocalSearchParams<{ cassette: string, title?: string, singers?: string[] }>();
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.myCassette}>
@@ -15,11 +26,17 @@ export default function Cassette() {
         <Frost />
         <Image
           style={[styles.image,]}
-          source={require("../../assets/images/cassette.png")}
+          source={`${apiUrl}/stream/maincover/${cassette}`}
           contentFit="cover"
         />
+        <Image
+          style={[styles.round,]}
+          source={require("../../assets/round.png")}
+          contentFit="cover"
+        />
+        <Audio source={`${apiUrl}/stream/music/${cassette}`} autoPlay loop ref={ref} />
       </View>
-      <PlayerBox />
+      <PlayerBox ref={ref} singers={singers} title={title} />
     </SafeAreaView>
   );
 }
@@ -116,10 +133,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between"
   },
   playButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 72,
     borderRadius: 40,
     backgroundColor: "#3B3C45",
+    width: 55,
+    height: 55,
+    justifyContent: "center",
+    alignItems: "center"
   },
   stopButton: {
     display: "flex",
@@ -129,6 +148,21 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     backgroundColor: "#3B3C45",
   },
+  psBox: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  round: {
+    position: "absolute",
+    width: 100,
+    height: 400,
+    borderRadius: 16,
+    top: "50%",
+    left: "46%",
+    transform: "translate(-50%, -50%)",
+    opacity: 0.95
+  },
+
 });
 
 
@@ -145,19 +179,46 @@ function Frost() {
   </View>
 }
 
-function PlayerBox() {
+function PlayerBox({ ref, title, singers }: { ref: RefObject<AudioTagHandle | null>, title?: string, singers?: string[] }) {
+
+  const btnSnd = useAudioPlayer(btnSound);
+
+  async function playButtonSound() {
+    await btnSnd.seekTo(0);
+    btnSnd.play();
+  }
+
+  function handlePlay() {
+    playButtonSound()
+    if (ref.current) {
+      ref.current.play()
+    }
+  }
+
+  function handlePause() {
+    playButtonSound()
+    if (ref.current) {
+      ref.current.pause()
+    }
+  }
+
+
   return <View style={styles.playerBox}>
-    <View style={styles.timer}><Text style={{ color: colors.fontColor }}>3:02</Text></View>
+    <View style={styles.timer}><Text style={{ color: colors.fontColor }}></Text></View>
     <View>
-      <Text style={styles.songname}>Tum kaha ho</Text>
-      <Text style={styles.singerName}>Pratham OP</Text>
+      <Text style={styles.songname}>{title}</Text>
+      <Text style={styles.singerName}>{singers}</Text>
     </View>
     <View style={styles.controlBox}>
       <TouchableOpacity style={styles.stopButton}><StepBack color={colors.songColor} size={20} /></TouchableOpacity>
-      <TouchableOpacity style={[styles.playButton]}><Text style={{ fontWeight: 500, color: colors.fontColor, fontSize: 18 }}>Play</Text></TouchableOpacity>
+      <View style={styles.psBox}>
+        <TouchableOpacity onPress={handlePlay} style={[styles.playButton]}><Play fill={"white"} color={"white"} size={24} /></TouchableOpacity>
+        <TouchableOpacity onPress={handlePause} style={[styles.playButton]}><SquareCode fill={"#FF746C"} color={"#FF746C"} size={24} /></TouchableOpacity>
+      </View>
       <TouchableOpacity style={styles.stopButton}><StepForward size={20} color={colors.songColor} /></TouchableOpacity>
     </View>
   </View>
 }
+
 
 
