@@ -2,12 +2,12 @@ import { Stack } from "expo-router";
 import colors from "./styles/colors";
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import MusicContext from "./context/musicContext";
 
 SplashScreen.preventAutoHideAsync()
 
-export const apiUrl = " http://starind.ddns.net:8080/napster"
+export const apiUrl ="http://starind.ddns.net:8080/napster";
 export type musicList = {
   list: { _id: string, title: string, singers: string[] }[]
 }
@@ -24,6 +24,9 @@ export default function RootLayout() {
         setMusicL(music.data)
       } catch (e) {
         console.warn(e);
+        if (isAxiosError(e)) {
+          console.log(e.response)
+        }
       } finally {
         setIsReady(true);
       }

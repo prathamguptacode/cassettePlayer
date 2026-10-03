@@ -5,6 +5,7 @@ import mongoose from "mongoose"
 import upload from "./routes/upload"
 import stream from "./routes/music"
 import errHandler from "./middleware/errormiddleware"
+import cors from "cors"
 
 mongoose.connect(env.DB_URL).then(() => console.log("connected to DB")).catch(() => {
   console.log("DB Connection error")
@@ -13,6 +14,7 @@ mongoose.connect(env.DB_URL).then(() => console.log("connected to DB")).catch(()
 
 const app = express()
 
+app.use(cors())
 app.get("/", (_req: Request, res: Response) => {
   res.json({ message: "hello world! music loverr" })
 })
