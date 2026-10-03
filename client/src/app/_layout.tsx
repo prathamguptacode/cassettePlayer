@@ -4,10 +4,15 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from "react";
 import axios, { isAxiosError } from "axios";
 import MusicContext from "./context/musicContext";
+import { Text, View } from "react-native";
+import { FlaskConicalOff } from "lucide-react-native";
 
 SplashScreen.preventAutoHideAsync()
 
-export const apiUrl ="http://starind.ddns.net:8080/napster";
+// export const apiUrl ="http://starind.ddns.net:8080/napster";
+
+export const apiUrl = "http://172.20.10.10:8000";
+
 export type musicList = {
   list: { _id: string, title: string, singers: string[] }[]
 }
@@ -43,6 +48,13 @@ export default function RootLayout() {
 
   if (!isReady) {
     return null;
+  }
+
+  if (musicL == null) {
+    return <View style={{ flex: 1, justifyContent: "center", alignItems: "center", gap: 32 }}>
+      <FlaskConicalOff size={100} color={"white"} />
+      <Text style={{ color: "white", fontWeight: 500, fontSize: 24 }} >Connect to Pie</Text>
+    </View>
   }
 
 
